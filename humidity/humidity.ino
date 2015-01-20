@@ -8,13 +8,13 @@
 
 static long int address = 0x66996699L;  // So that's 0x0066996699
 
-static DHT11 dht(2);
-static RF24 rf(/*ce*/ 8, /*cs*/ 9);
+static DHT11 dht(3);
+static RF24 rf(/*ce*/ 9, /*cs*/ 10);
 
 void setup()
 {
   // init serial
-  Serial.begin(115200);
+  Serial.begin(9600);
   // init DHT
   dht.init();
   // init RF24
@@ -29,25 +29,18 @@ void loop()
 {
   // read humidity / temperature
   int humi, temp;
-  dht.read(&humi, &temp);
+  if (!dht.read(&humi, &temp)) {
+    Serial.println("Fail!\n");
+  }
   
-  Serial.print("T=");
-  Serial.print(temp);
-  Serial.print(", ");
-  Serial.print("H=");
-  Serial.println(humi); 
- 
+  // format
+  char buf[32];
+  snprintf(buf, sizeof(buf), "RH=%d%%,T=%2d", humi, temp);
+  
   // send it
-  uint8_t buf[7];
-  buf[0] = 6;
-  buf[1] = 'H';
-  buf[2] = 'U';
-  buf[3] = 'M';
-  buf[4] = 'I';
-  buf[5] = humi;
-  buf[6] = temp;
-  rf.write(&buf, sizeof(buf));
- 
+  Serial.println(buf);
+  rf.write(&buf, strlen(buf));
+
   // wait a bit
   delay(1000);
 }
