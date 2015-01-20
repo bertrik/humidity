@@ -2,13 +2,15 @@
 #include <nRF24L01.h>
 #include <RF24.h>
 
-static long int address = 0x66996699L;  // So that's 0x0066996699
+const long int address = 0x66996699L;   // So that's 0x0066996699
 
-RF24 rf(/*ce*/ 9, /*cs*/ 10);
+static RF24 rf( /*ce */ 9, /*cs */ 10);
 
-void setup() {
+void setup()
+{
     Serial.begin(9600);
-    Serial.println("Serial receiver started");
+    Serial.println("Humidity receiver started");
+
     rf.begin();
     rf.setRetries(15, 15);
     rf.enableDynamicPayloads();
@@ -20,7 +22,7 @@ void setup() {
 void loop()
 {
     char buf[33];
-  
+
     if (rf.available()) {
         boolean done = false;
         while (!done) {
@@ -30,5 +32,4 @@ void loop()
             Serial.println(buf);
         }
     }
-}  
-
+}
